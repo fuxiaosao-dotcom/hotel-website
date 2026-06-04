@@ -1,0 +1,44 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "public/images"
+public_folder: "/images"
+slug:
+  encoding: "ascii"
+  clean_accents: true
+  sanitize_replacement: "-"
+
+collections:
+  - name: "hotels"
+    label: "酒店管理"
+    label_singular: "酒店"
+    folder: "src/content/hotels"
+    create: true
+    delete: true
+    extension: md
+    slug: "{{fields.nameEn | slugify}}"
+    summary: "{{fields.name}} ({{fields.nameEn}})"
+    sortable_fields: ["order", "name"]
+    fields:
+      - { label: "中文名称", name: "name", widget: "string" }
+      - { label: "英文名称", name: "nameEn", widget: "string", hint: "访问网址将自动根据此项生成" }
+      - label: "所属地区"
+        name: "region"
+        widget: "select"
+        options:
+          - { label: "普吉岛", value: "phuket" }
+          - { label: "苏梅岛", value: "samui" }
+          - { label: "曼谷", value: "bangkok" }
+          - { label: "清迈", value: "chiangmai" }
+      - { label: "标签", name: "tags", widget: "list", hint: "如：避世禅意、私人海滩" }
+      - { label: "最低价格（泰铢）", name: "priceMin", widget: "number", value_type: "int" }
+      - { label: "最高价格（泰铢）", name: "priceMax", widget: "number", value_type: "int" }
+      - { label: "价格单位", name: "priceUnit", widget: "string", default: "泰铢/晚", required: false }
+      - { label: "优惠标签", name: "badgeText", widget: "string", hint: "如：🔥 3天2晚 · 6折优惠" }
+      - { label: "头部渐变背景", name: "headerGradient", widget: "string", hint: "CSS渐变，如 linear-gradient(135deg,#2c1810,#5c3a28)" }
+      - { label: "标签背景色", name: "badgeBg", widget: "string", hint: "如 #d4af37" }
+      - { label: "标签文字色", name: "badgeColor", widget: "string", hint: "如 #2c1810" }
+      - { label: "封面图片", name: "coverImage", widget: "image", required: false }
+      - { label: "排序权重", name: "order", widget: "number", value_type: "int", default: 0, hint: "数字越小越靠前" }
+      - { label: "详细内容", name: "body", widget: "markdown", hint: "用 ### 标题 来分节，每个 ### 会自动生成可折叠卡片" }

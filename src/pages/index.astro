@@ -1,0 +1,58 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const hotels = await getCollection('hotels');
+hotels.sort((a, b) => a.data.order - b.data.order);
+
+const regionConfig = {
+  phuket: { label: '普吉岛', emoji: '📍' },
+  samui: { label: '苏梅岛', emoji: '📍' },
+  bangkok: { label: '曼谷', emoji: '📍' },
+  chiangmai: { label: '清迈', emoji: '📍' },
+};
+
+const grouped = {};
+for (const hotel of hotels) {
+  const region = hotel.data.region;
+  if (!grouped[region]) grouped[region] = [];
+  grouped[region].push(hotel);
+}
+---
+
+<Layout title="泰国顶奢酒店手册">
+  <div class="header">
+    <h1>泰国顶奢酒店</h1>
+    <div class="sub">Luxury Hotels of Thailand</div>
+    <div class="badge">🔥 全部六折优惠</div>
+  </div>
+
+  <div class="container">
+    {Object.entries(regionConfig).map(([key, cfg]) => {
+      const regionHotels = grouped[key];
+      if (!regionHotels || regionHotels.length === 0) return null;
+      return (
+        <div class="section">
+          <div class="section-title">
+            <span class="emoji">{cfg.emoji}</span> {cfg.label}
+          </div>
+          {regionHotels.map(hotel => (
+            <a class="hotel-link" href={`/hotels/${hotel.slug}/`}>
+              <div class="name">{hotel.data.name}</div>
+              <div class="name-en">{hotel.data.nameEn}</div>
+              <div class="tags">
+                {hotel.data.tags.map(tag => <span class="tag">{tag}</span>)}
+              </div>
+              <div class="price">💰 {hotel.data.priceMin.toLocaleString()}-{hotel.data.priceMax.toLocaleString()} {hotel.data.priceUnit || '泰铢/晚'}</div>
+            </a>
+          ))}
+        </div>
+      );
+    })}
+  </div>
+
+  <div class="footer">
+    <div class="logo">云端之旅</div>
+    <p>带您住遍全世界最好的酒店</p>
+  </div>
+</Layout>

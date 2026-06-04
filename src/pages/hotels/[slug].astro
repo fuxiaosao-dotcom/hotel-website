@@ -1,0 +1,133 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const hotels = await getCollection('hotels');
+  return hotels.map(hotel => ({
+    params: { slug: hotel.slug },
+    props: { hotel },
+  }));
+}
+
+const { hotel } = Astro.props;
+const { name, nameEn, region, tags, priceMin, priceMax, badgeText, headerGradient, badgeBg, badgeColor } = hotel.data;
+const { Content } = await hotel.render();
+
+// Get same-region hotels for comparison table
+const allHotels = await getCollection('hotels');
+const sameRegion = allHotels
+  .filter(h => h.data.region === region)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const regionLabel = { phuket: '普吉岛 Phuket', samui: '苏梅岛 Koh Samui', bangkok: '曼谷 Bangkok', chiangmai: '清迈 Chiang Mai' };
+---
+
+<Layout title={`${name} - 泰国顶奢酒店`}>
+  <div class="detail-header" style={`background: ${headerGradient};`}>
+    <a class="detail-back" href="/">← 返回列表</a>
+    <div class="name">{name}</div>
+    <div class="name-en">{nameEn + ' · ' + regionLabel[region]}</div>
+    {badgeText && (
+      <div class="detail-badge" style={`background: ${badgeBg}; color: ${badgeColor};`}>
+        {badgeText}
+      </div>
+    )}
+  </div>
+
+  <div class="detail-body-container detail-body">
+    <!-- Rendered markdown body with collapsible sections -->
+    <div class="hotel-content" id="hotel-content">
+      <Content />
+    </div>
+
+    <!-- Comparison Table -->
+    {sameRegion.length > 1 && (
+      <div class="info-card">
+        <div class="compare-table">
+          <div class="compare-row compare-hdr">
+            <span class="c-hotel">酒店</span>
+            <span class="c-style">风格</span>
+            <span class="c-price">价格（泰铢/晚）</span>
+          </div>
+          {sameRegion.map(h => (
+            h.slug === hotel.slug ? (
+              <div class="compare-row active">
+                <span class="c-hotel">✦ {h.data.name}</span>
+                <span class="c-style">{h.data.tags[0]}</span>
+                <span class="c-price">{h.data.priceMin.toLocaleString()}-{h.data.priceMax.toLocaleString()}</span>
+              </div>
+            ) : (
+              <a class="c-link" href={`/hotels/${h.slug}/`}>
+                <span class="c-hotel">{h.data.name}</span>
+                <span class="c-style">{h.data.tags[0]}</span>
+                <span class="c-price">{h.data.priceMin.toLocaleString()}-{h.data.priceMax.toLocaleString()}</span>
+              </a>
+            )
+          ))}
+        </div>
+      </div>
+    )}
+
+    <a href="/" style="display:block;text-align:center;margin:20px auto 0;width:fit-content;color:#b8860b;border:1px solid #d4af37;border-radius:8px;padding:10px 24px;text-decoration:none;background:transparent;">
+      ← 返回酒店列表
+    </a>
+  </div>
+
+  <div class="footer">
+    <div class="logo">云端之旅</div>
+    <p>带您住遍全世界最好的酒店</p>
+  </div>
+</Layout>
+
+<script>
+  // Transform h3 sections into collapsible info-cards
+  const container = document.getElementById('hotel-content');
+  if (container) {
+    const children = Array.from(container.children);
+    const iconMap = {
+      '位置': '📍', '交通': '📍',
+      '环境': '🏠', '设施': '🏠',
+      '风格': '🎨', '设计': '🎨',
+      '价格': '💰', '优惠': '💰',
+    };
+
+    let sections = [];
+    let current = null;
+
+    for (const child of children) {
+      if (child.tagName === 'H3') {
+        current = { title: child.textContent.trim(), elements: [] };
+        sections.push(current);
+      } else if (current) {
+        current.elements.push(child);
+      }
+    }
+
+    container.innerHTML = '';
+    sections.forEach((sec, i) => {
+      const id = `sec-${i}`;
+      const icon = Object.entries(iconMap).find(([key]) => sec.title.includes(key));
+      const iconChar = icon ? icon[1] : '📋';
+
+      const card = document.createElement('div');
+      card.className = 'info-card';
+      card.innerHTML = `
+        <input type="checkbox" id="${id}" class="info-expand" ${i === 0 ? 'checked' : ''}>
+        <label class="info-header" for="${id}">
+          <span class="icon">${iconChar}</span>
+          <span class="title">${sec.title}</span>
+          <span class="arrow">▼</span>
+        </label>
+        <div class="info-content"></div>
+      `;
+
+      const contentDiv = card.querySelector('.info-content');
+      for (const el of sec.elements) {
+        contentDiv.appendChild(el.cloneNode(true));
+      }
+
+      container.appendChild(card);
+    });
+  }
+</script>
