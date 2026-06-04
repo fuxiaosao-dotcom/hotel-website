@@ -21,10 +21,12 @@ for (const hotel of hotels) {
 ---
 
 <Layout title="泰国顶奢酒店手册">
-  <div class="header">
-    <h1>泰国顶奢酒店</h1>
-    <div class="sub">Luxury Hotels of Thailand</div>
-    <div class="badge">🔥 全部六折优惠</div>
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">✦ 精选推荐</div>
+      <h1>泰国顶奢酒店</h1>
+      <div class="sub">Luxury Hotels of Thailand</div>
+    </div>
   </div>
 
   <div class="container">
@@ -38,12 +40,14 @@ for (const hotel of hotels) {
           </div>
           {regionHotels.map(hotel => (
             <a class="hotel-link" href={`/hotels/${hotel.slug}/`}>
-              <div class="name">{hotel.data.name}</div>
-              <div class="name-en">{hotel.data.nameEn}</div>
-              <div class="tags">
-                {hotel.data.tags.map(tag => <span class="tag">{tag}</span>)}
+              <div class="hotel-card-inner">
+                <div class="name">{hotel.data.name}</div>
+                <div class="name-en">{hotel.data.nameEn}</div>
+                <div class="tags">
+                  {hotel.data.tags.map(tag => <span class="tag">{tag}</span>)}
+                </div>
+                <div class="price">{hotel.data.priceMin.toLocaleString()} - {hotel.data.priceMax.toLocaleString()} 泰铢/晚</div>
               </div>
-              <div class="price">💰 {hotel.data.priceMin.toLocaleString()}-{hotel.data.priceMax.toLocaleString()} {hotel.data.priceUnit || '泰铢/晚'}</div>
             </a>
           ))}
         </div>
@@ -51,7 +55,7 @@ for (const hotel of hotels) {
     })}
   </div>
 
-  <div class="footer">
+  <div class="site-footer">
     <div class="logo">云端之旅</div>
     <p>带您住遍全世界最好的酒店</p>
   </div>

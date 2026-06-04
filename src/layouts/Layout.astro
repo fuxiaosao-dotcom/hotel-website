@@ -3,238 +3,483 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>{Astro.props.title || '泰国顶奢酒店手册'}</title>
+  <title>{Astro.props.title || '云端之旅 - 泰国顶奢酒店'}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    /* ── Reset & Variables ── */
+    :root {
+      --navy: #0c0c1a;
+      --navy-light: #1a1a30;
+      --gold: #c9a84c;
+      --gold-light: #e8d5a0;
+      --cream: #f8f6f1;
+      --cream-dark: #efece4;
+      --white: #ffffff;
+      --text: #1a1a2a;
+      --text-secondary: #6b6b7a;
+      --text-muted: #9a9aaa;
+      --shadow-sm: 0 2px 8px rgba(12,12,26,0.06);
+      --shadow-md: 0 4px 20px rgba(12,12,26,0.1);
+      --shadow-lg: 0 8px 40px rgba(12,12,26,0.12);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --max-width: 680px;
+      --font-display: 'Noto Serif SC', serif;
+      --font-body: 'Inter', 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
-      background: #f5f3ef;
-      font-family: 'PingFang SC', 'Microsoft YaHei', '-apple-system', sans-serif;
-      color: #333;
-      -webkit-tap-highlight-color: transparent;
+      background: var(--cream);
+      font-family: var(--font-body);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
     }
 
-    .header {
-      background: linear-gradient(135deg, #0f0f1a, #1a1a2e);
-      color: #d4af37;
-      padding: 48px 20px 36px;
+    /* ── Home Header ── */
+    .hero {
+      position: relative;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, #16213e 100%);
+      color: var(--gold-light);
+      padding: 64px 20px 56px;
       text-align: center;
+      overflow: hidden;
     }
-    .header h1 { font-size: 30px; font-weight: 300; letter-spacing: 6px; margin-bottom: 4px; }
-    .header .sub { color: #a09070; font-size: 14px; letter-spacing: 3px; }
-    .header .badge {
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 80%, rgba(201,168,76,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.04) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.3;
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-badge {
       display: inline-block;
-      background: #d4af37;
-      color: #1a1a2e;
-      padding: 8px 24px;
+      background: linear-gradient(135deg, var(--gold), #dbb84a);
+      color: var(--navy);
+      padding: 6px 20px;
       border-radius: 20px;
-      font-size: 14px;
-      margin-top: 16px;
-      font-weight: bold;
-    }
-
-    .container { max-width: 640px; margin: 0 auto; padding: 16px; }
-
-    .section { padding: 12px 0; }
-    .section-title {
-      font-size: 20px;
-      color: #1a1a2e;
-      font-weight: 600;
-      padding: 12px 4px 8px;
-      border-bottom: 2px solid #d4af37;
-      letter-spacing: 3px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .section-title .emoji { font-size: 22px; }
-
-    .hotel-link {
-      display: block;
-      background: #fff;
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin: 8px 0;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
-      border: 1px solid #eee;
-      color: #333;
-      text-decoration: none;
-      transition: all 0.15s;
-      position: relative;
-      overflow: hidden;
-    }
-    .hotel-link:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.1); transform: translateY(-1px); }
-    .hotel-link:active { background: #f5f3ef; transform: scale(0.98); }
-    .hotel-link .name { font-size: 17px; font-weight: 600; }
-    .hotel-link .name-en { font-size: 12px; color: #a09070; margin: 1px 0 4px; }
-    .hotel-link .tags { display: flex; gap: 4px; flex-wrap: wrap; margin: 4px 0; }
-    .hotel-link .tag {
-      background: #f5f0e8;
-      color: #6a5a3a;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 11px;
-    }
-    .hotel-link .price { font-size: 13px; color: #b8860b; font-weight: 500; }
-
-    .footer {
-      text-align: center;
-      padding: 32px 20px 48px;
-    }
-    .footer .logo { color: #d4af37; font-size: 16px; letter-spacing: 6px; }
-    .footer p { color: #a09070; font-size: 13px; margin-top: 4px; }
-
-    /* Detail page styles */
-    .detail-header {
-      padding: 40px 20px 24px;
-      color: #fff;
-      position: relative;
-      border-radius: 0 0 20px 20px;
-      margin: 0 0 12px;
-    }
-    .detail-back {
-      display: inline-block;
-      color: rgba(255,255,255,0.8);
-      text-decoration: none;
-      font-size: 16px;
-      margin-bottom: 12px;
-      padding: 6px 12px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.1);
-    }
-    .detail-back:hover { background: rgba(255,255,255,0.2); }
-    .detail-header .name { font-size: 24px; font-weight: 600; }
-    .detail-header .name-en {
-      font-size: 14px;
-      color: rgba(255,255,255,0.7);
-      padding: 2px 0 6px;
-    }
-    .detail-badge {
-      display: inline-block;
-      padding: 5px 14px;
-      border-radius: 12px;
       font-size: 12px;
-      font-weight: bold;
-      margin-top: 6px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 4px;
+      margin-bottom: 6px;
+    }
+    .hero .sub {
+      font-size: 15px;
+      color: rgba(232,213,160,0.6);
+      letter-spacing: 4px;
+      font-weight: 300;
     }
 
-    .detail-body { padding: 0 0 48px; }
-
-    .info-card {
-      background: #fff;
-      border-radius: 12px;
-      margin: 8px 0;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.04);
-      border: 1px solid #eee;
-      overflow: hidden;
+    /* ── Container ── */
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 20px 16px;
     }
-    .info-header {
+
+    /* ── Section ── */
+    .section { padding: 8px 0 4px; }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--navy);
+      font-weight: 600;
+      padding: 16px 4px 12px;
+      margin-bottom: 4px;
+      position: relative;
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 12px 14px;
+    }
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 4px;
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      border-radius: 2px;
+    }
+    .section-title .emoji { font-size: 20px; }
+
+    /* ── Hotel Card ── */
+    .hotel-link {
+      display: block;
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 0;
+      margin: 10px 0;
+      box-shadow: var(--shadow-sm);
+      color: var(--text);
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .hotel-link::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--gold), #dbb84a);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .hotel-link:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .hotel-link:hover::before { opacity: 1; }
+    .hotel-link:active { transform: scale(0.99); }
+
+    .hotel-card-inner { padding: 16px 16px 16px 20px; }
+
+    .hotel-link .name {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+    .hotel-link .name-en {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 1px 0 6px;
+      letter-spacing: 0.5px;
+    }
+    .hotel-link .tags {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin: 6px 0;
+    }
+    .hotel-link .tag {
+      background: linear-gradient(135deg, #f5f0e8, #efe8dc);
+      color: #7a6a4a;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .hotel-link .price {
+      font-size: 13px;
+      color: #b8860b;
+      font-weight: 600;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .hotel-link .price::before {
+      content: '฿';
+      font-size: 14px;
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      text-align: center;
+      padding: 40px 20px 48px;
+      border-top: 1px solid rgba(0,0,0,0.05);
+      margin-top: 12px;
+    }
+    .site-footer .logo {
+      font-family: var(--font-display);
+      color: var(--gold);
+      font-size: 18px;
+      letter-spacing: 6px;
+    }
+    .site-footer p {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 6px;
+      letter-spacing: 1px;
+    }
+
+    /* ── Detail Page ── */
+    .detail-header {
+      padding: 48px 20px 32px;
+      color: var(--white);
+      position: relative;
+      border-radius: 0 0 24px 24px;
+      margin: 0 0 8px;
+      overflow: hidden;
+    }
+    .detail-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 30% 100%, rgba(255,255,255,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 0%, rgba(255,255,255,0.04) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .detail-header > * { position: relative; z-index: 1; }
+
+    .detail-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 14px;
+      margin-bottom: 16px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(8px);
+      transition: all 0.2s;
+    }
+    .detail-back:hover {
+      background: rgba(255,255,255,0.15);
+      color: var(--white);
+    }
+
+    .detail-header .name {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+    .detail-header .name-en {
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+      padding: 3px 0 8px;
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+    .detail-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-body { padding: 0 0 48px; }
+    .detail-body-container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 12px 16px;
+    }
+
+    /* ── Info Cards ── */
+    .info-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      margin: 10px 0;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      transition: box-shadow 0.3s;
+    }
+    .info-card:hover { box-shadow: var(--shadow-md); }
+
+    .info-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
       cursor: pointer;
       user-select: none;
+      transition: background 0.2s;
     }
-    .info-header .icon { font-size: 18px; }
-    .info-header .title { font-size: 15px; font-weight: 600; flex: 1; }
-    .info-header .arrow { transition: transform 0.2s; color: #a09070; font-size: 16px; }
+    .info-header:hover { background: rgba(201,168,76,0.03); }
+    .info-header .icon { font-size: 18px; width: 24px; text-align: center; }
+    .info-header .title {
+      font-size: 15px;
+      font-weight: 600;
+      flex: 1;
+      color: var(--navy);
+      letter-spacing: 0.5px;
+    }
+    .info-header .arrow {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      color: var(--gold);
+      font-size: 14px;
+      opacity: 0.6;
+    }
+
+    .info-expand { display: none; }
     .info-content {
       max-height: 0;
       overflow: hidden;
-      transition: max-height 0.3s ease;
-      padding: 0 14px;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s;
+      padding: 0 16px;
     }
-    .info-expand { display: none; }
     .info-expand:checked ~ .info-content {
       max-height: 2000px;
-      padding: 0 14px 14px;
+      padding: 0 16px 16px;
     }
-    .info-expand:checked ~ .info-header .arrow { transform: rotate(180deg); }
+    .info-expand:checked ~ .info-header .arrow { transform: rotate(180deg); opacity: 1; }
+
     .info-content p {
       font-size: 14px;
-      color: #555;
-      line-height: 1.7;
+      color: var(--text-secondary);
+      line-height: 1.8;
       margin-bottom: 4px;
     }
+    .info-content strong {
+      color: var(--navy);
+      font-weight: 600;
+    }
+    .info-content ul {
+      list-style: none;
+      padding: 0;
+      margin: 4px 0;
+    }
+    .info-content ul li {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      padding: 2px 0 2px 20px;
+      position: relative;
+    }
+    .info-content ul li::before {
+      content: '•';
+      position: absolute;
+      left: 4px;
+      color: var(--gold);
+      font-weight: bold;
+    }
 
+    /* Sub sections */
     .sub-section {
-      margin-top: 8px;
-      background: #f9f6f0;
-      border-radius: 8px;
-      border: 1px solid #e8dcc8;
+      margin-top: 10px;
+      background: var(--cream);
+      border-radius: 10px;
+      border: 1px solid rgba(201,168,76,0.15);
       overflow: hidden;
     }
     .sub-toggle { display: none; }
     .sub-toggle:checked ~ .sub-content {
       max-height: 1000px;
-      padding: 10px 12px 12px;
-      border-top: 1px solid #e8dcc8;
+      padding: 10px 14px 14px;
+      border-top: 1px solid rgba(201,168,76,0.12);
     }
     .sub-label {
       display: block;
-      padding: 10px 12px;
+      padding: 10px 14px;
       font-size: 13px;
-      color: #1a1a2e;
+      font-weight: 500;
+      color: var(--navy);
       cursor: pointer;
       position: relative;
+      transition: background 0.2s;
     }
-    .sub-label:after {
+    .sub-label:hover { background: rgba(201,168,76,0.05); }
+    .sub-label::after {
       content: '+';
       float: right;
-      color: #d4af37;
+      color: var(--gold);
       font-size: 16px;
-      font-weight: bold;
+      font-weight: 700;
+      transition: transform 0.2s;
     }
-    .sub-toggle:checked ~ .sub-label:after { content: '\2212'; }
+    .sub-toggle:checked ~ .sub-label::after {
+      content: '−';
+      transform: rotate(180deg);
+    }
     .sub-content {
       max-height: 0;
       overflow: hidden;
-      padding: 0 12px;
+      padding: 0 14px;
       font-size: 13px;
-      color: #555;
-      line-height: 1.6;
-      transition: all 0.25s;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      transition: all 0.25s ease;
     }
 
+    /* ── Comparison Table ── */
     .compare-table {
-      margin: 12px;
-      border-radius: 10px;
+      margin: 4px 12px 12px;
+      border-radius: 12px;
       overflow: hidden;
-      border: 1px solid #eee;
+      border: 1px solid rgba(0,0,0,0.06);
     }
     .compare-row {
       display: flex;
-      padding: 10px 12px;
-      border-bottom: 1px solid #f0f0f0;
-      background: #fff;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+      background: var(--white);
       align-items: center;
       font-size: 13px;
+      transition: background 0.2s;
     }
     .compare-row:last-child { border-bottom: none; }
-    .compare-row.active { background: #faf6ef; }
-    .compare-hdr { background: #1a1a2e; }
-    .compare-hdr span { color: #d4af37; font-weight: 400; font-size: 13px; }
-    .c-hotel { flex: 2; font-weight: 500; color: #1a1a2e; }
-    .c-style { flex: 1.5; color: #777; }
-    .c-price { flex: 1; color: #b8860b; text-align: right; }
+    .compare-row.active {
+      background: rgba(201,168,76,0.06);
+      position: relative;
+    }
+    .compare-row.active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 2px; bottom: 2px;
+      width: 3px;
+      background: var(--gold);
+      border-radius: 0 2px 2px 0;
+    }
+    .compare-hdr {
+      background: var(--navy);
+    }
+    .compare-hdr span {
+      color: var(--gold);
+      font-weight: 500;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .c-hotel { flex: 2; font-weight: 600; color: var(--navy); }
+    .c-style { flex: 1.5; color: var(--text-secondary); }
+    .c-price { flex: 1; color: #b8860b; font-weight: 600; text-align: right; }
     .c-link {
       text-decoration: none;
       color: inherit;
       display: flex;
-      padding: 10px 12px;
-      border-bottom: 1px solid #f0f0f0;
-      background: #fff;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+      background: var(--white);
+      transition: background 0.2s;
     }
-    .c-link:hover { background: #faf6ef; }
+    .c-link:hover { background: rgba(201,168,76,0.04); }
 
-    /* Markdown content styling */
+    /* ── Utility ── */
     .hotel-content { padding: 0; }
-    .hotel-content h3:first-child { margin-top: 0; }
 
-    .detail-body-container {
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 16px;
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .hero { padding: 44px 16px 40px; }
+      .hero h1 { font-size: 26px; letter-spacing: 3px; }
+      .hero .sub { font-size: 13px; }
+      .detail-header { padding: 36px 16px 24px; }
+      .detail-header .name { font-size: 22px; }
+      .section-title { font-size: 19px; }
     }
   </style>
 </head>
